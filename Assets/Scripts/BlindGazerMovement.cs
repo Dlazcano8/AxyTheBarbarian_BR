@@ -9,7 +9,14 @@ public class BlindGazerMovement : MonoBehaviour
     private float topLimit = 3f;
     private float bottomLimit = -3f;
 
-    void Update()
+    private Rigidbody2D rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void FixedUpdate()
     {
         Move();
         UpdateState();
@@ -19,14 +26,23 @@ public class BlindGazerMovement : MonoBehaviour
     {
         Vector2 direction = movingUp ? Vector2.up : Vector2.down;
 
-        transform.Translate(direction * speed * Time.deltaTime);
+        Vector2 nextPosition =
+            rb.position + direction * speed * Time.fixedDeltaTime;
+
+        nextPosition.y = Mathf.Clamp(
+            nextPosition.y,
+            bottomLimit,
+            topLimit
+        );
+
+        rb.MovePosition(nextPosition);
     }
 
     private void UpdateState()
     {
-        if (transform.position.y >= topLimit)
+        if (rb.position.y >= topLimit)
             movingUp = false;
-        else if (transform.position.y <= bottomLimit)
+        else if (rb.position.y <= bottomLimit)
             movingUp = true;
     }
 }

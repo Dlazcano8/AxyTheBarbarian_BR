@@ -1,14 +1,27 @@
+
 using UnityEngine;
 
 public class AxyMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
 
+    private Rigidbody2D rb;
+    private AudioSource collisionAudio;
     private Vector2 movement;
 
-    void Update()
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        collisionAudio = GetComponent<AudioSource>();
+    }
+
+    private void Update()
     {
         ProcessInput();
+    }
+
+    private void FixedUpdate()
+    {
         UpdateState();
     }
 
@@ -34,6 +47,16 @@ public class AxyMovement : MonoBehaviour
 
     private void UpdateState()
     {
-        transform.Translate(movement * speed * Time.deltaTime);
+        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Wall") ||
+            collision.collider.CompareTag("Enemy"))
+        {
+            if (collisionAudio != null && collisionAudio.clip != null)
+                collisionAudio.Play();
+        }
     }
 }
