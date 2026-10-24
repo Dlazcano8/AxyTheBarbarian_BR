@@ -13,6 +13,11 @@ public class BlindGazerState : MonoBehaviour
 
   public Vector2 Direction => movingUp ? Vector2.up : Vector2.down;
 
+  public Vector2 CalculateVelocity(float speed)
+  {
+    return Direction * Mathf.Max(0f, speed);
+  }
+
   public void UpdateState(float positionY)
   {
     if (positionY >= topLimit)

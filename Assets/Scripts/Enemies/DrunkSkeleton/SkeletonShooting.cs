@@ -4,9 +4,14 @@ using UnityEngine;
 public class SkeletonShooting : MonoBehaviour
 {
   [SerializeField] private GameObject arrowPrefab;
-  [SerializeField] private float shootRadius = 3f;
+  [SerializeField, Min(0f)] private float shootRadius = 3f;
 
   private GameObject currentArrow;
+
+  private void OnValidate()
+  {
+    shootRadius = Mathf.Max(0f, shootRadius);
+  }
 
   public void Shoot()
   {
@@ -17,7 +22,7 @@ public class SkeletonShooting : MonoBehaviour
       Destroy(currentArrow);
 
     float angle = Random.Range(0f, Mathf.PI * 2f);
-    float distance = Random.Range(0f, shootRadius);
+    float distance = Random.Range(0f, Mathf.Max(0f, shootRadius));
 
     Vector2 randomOffset = new Vector2(
         Mathf.Cos(angle) * distance,

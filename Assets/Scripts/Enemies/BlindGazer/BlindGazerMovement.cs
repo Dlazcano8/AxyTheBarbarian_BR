@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(BlindGazerState))]
 public class BlindGazerMovement : MonoBehaviour
 {
-    [SerializeField] private float speed = 2f;
+    [SerializeField, Min(0f)] private float speed = 2f;
 
     private Rigidbody2D rb;
     private BlindGazerState state;
@@ -25,7 +25,7 @@ public class BlindGazerMovement : MonoBehaviour
     private void Move()
     {
         Vector2 nextPosition =
-            rb.position + state.Direction * speed * Time.fixedDeltaTime;
+            rb.position + state.CalculateVelocity(speed) * Time.fixedDeltaTime;
 
         nextPosition.y = Mathf.Clamp(
             nextPosition.y,

@@ -4,7 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(SkeletonShooting))]
 public class SkeletonShootTimer : MonoBehaviour
 {
-  [SerializeField] private float shootInterval = 1.5f;
+  private const float MinShootInterval = 0.01f;
+
+  [SerializeField, Min(MinShootInterval)] private float shootInterval = 1.5f;
 
   private float timer;
   private SkeletonShooting shooting;
@@ -14,6 +16,11 @@ public class SkeletonShootTimer : MonoBehaviour
     shooting = GetComponent<SkeletonShooting>();
   }
 
+  private void OnValidate()
+  {
+    shootInterval = Mathf.Max(MinShootInterval, shootInterval);
+  }
+
   private void Update()
   {
     UpdateTimer();
@@ -21,11 +28,12 @@ public class SkeletonShootTimer : MonoBehaviour
 
   private void UpdateTimer()
   {
+    float interval = Mathf.Max(MinShootInterval, shootInterval);
     timer += Time.deltaTime;
 
-    if (timer >= shootInterval)
+    while (timer >= interval)
     {
-      timer -= shootInterval;
+      timer -= interval;
       shooting.Shoot();
     }
   }
