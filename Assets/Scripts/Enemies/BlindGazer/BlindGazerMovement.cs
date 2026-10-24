@@ -1,48 +1,38 @@
 
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BlindGazerState))]
 public class BlindGazerMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 2f;
 
-    private bool movingUp = true;
-    private float topLimit = 3f;
-    private float bottomLimit = -3f;
-
     private Rigidbody2D rb;
+    private BlindGazerState state;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        state = GetComponent<BlindGazerState>();
     }
 
     private void FixedUpdate()
     {
+        state.UpdateState(rb.position.y);
         Move();
-        UpdateState();
     }
 
     private void Move()
     {
-        Vector2 direction = movingUp ? Vector2.up : Vector2.down;
-
         Vector2 nextPosition =
-            rb.position + direction * speed * Time.fixedDeltaTime;
+            rb.position + state.Direction * speed * Time.fixedDeltaTime;
 
         nextPosition.y = Mathf.Clamp(
             nextPosition.y,
-            bottomLimit,
-            topLimit
+            state.BottomLimit,
+            state.TopLimit
         );
 
         rb.MovePosition(nextPosition);
-    }
-
-    private void UpdateState()
-    {
-        if (rb.position.y >= topLimit)
-            movingUp = false;
-        else if (rb.position.y <= bottomLimit)
-            movingUp = true;
     }
 }
