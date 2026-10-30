@@ -784,6 +784,8 @@ MonoBehaviour:
   exitPrefab: {fileID: 2041854103, guid: d35c0f4741e74741b0c3e74568339006, type: 3}
   blindGazerPrefab: {fileID: 1560569625, guid: 693d1524ef2b4c8aa616bad5c0e096e2, type: 3}
   drunkSkeletonPrefab: {fileID: 544054802, guid: 22aeb10015204e679ba0730070c1e324, type: 3}
+  cowardRatPrefab: {fileID: 100000, guid: 099ab2c1aa864051b2442b465447ae57, type: 3}
+  hungryZombiePrefab: {fileID: 100000, guid: a91fb2c17da6483faf71b225da41aec7, type: 3}
 --- !u!4 &642162938
 Transform:
   m_ObjectHideFlags: 0

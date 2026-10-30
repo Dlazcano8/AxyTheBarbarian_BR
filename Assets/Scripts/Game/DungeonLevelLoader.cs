@@ -8,6 +8,8 @@ public class DungeonLevelLoader : MonoBehaviour
 
   private GameObject generatedLevel;
 
+  public NavigationGraph Graph { get; private set; }
+
   private void Start()
   {
     LoadLevel();
@@ -29,12 +31,28 @@ public class DungeonLevelLoader : MonoBehaviour
     if (!TryReadLevel(out string[] rows, out Vector2Int playerCell))
       return;
 
-    int width = rows[0].Length;
-    int height = rows.Length;
+    foreach (string row in rows)
+    {
+      if (row.IndexOf('R') >= 0 && !factory.IsRatConfigured)
+      {
+        Debug.LogError("Asigna CowardRat.prefab con CowardRatController y EnemyPhysics en la Factory.", this);
+        return;
+      }
+
+      if (row.IndexOf('Z') >= 0 && !factory.IsZombieConfigured)
+      {
+        Debug.LogError("Asigna HungryZombie.prefab con HungryZombieController y EnemyPhysics en la Factory.", this);
+        return;
+      }
+    }
+
+    Graph = new NavigationGraph(rows);
+    int width = Graph.Width;
+    int height = Graph.Height;
 
     generatedLevel = new GameObject("GeneratedDungeon");
 
-    player.position = GetCellPosition(playerCell.x, playerCell.y, width, height);
+    player.position = Graph.CellToWorld(playerCell.x, playerCell.y);
 
     for (int row = 0; row < height; row++)
     {
@@ -42,8 +60,10 @@ public class DungeonLevelLoader : MonoBehaviour
       {
         factory.Create(
             rows[row][column],
-            GetCellPosition(column, row, width, height),
-            generatedLevel.transform
+            Graph.CellToWorld(column, row),
+            generatedLevel.transform,
+            player,
+            Graph
         );
       }
     }
@@ -91,6 +111,8 @@ public class DungeonLevelLoader : MonoBehaviour
           case '.':
           case 'G':
           case 'S':
+          case 'R':
+          case 'Z':
             break;
           default:
             Debug.LogError($"Símbolo '{symbol}' no válido en fila {row + 1}, columna {column + 1}.", this);
@@ -106,14 +128,5 @@ public class DungeonLevelLoader : MonoBehaviour
     }
 
     return true;
-  }
-
-  private Vector3 GetCellPosition(int column, int row, int width, int height)
-  {
-    return new Vector3(
-        column - (width - 1) * 0.5f,
-        (height - 1) * 0.5f - row,
-        0f
-    );
   }
 }
